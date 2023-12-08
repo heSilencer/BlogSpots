@@ -110,17 +110,22 @@ app.post('/login', (req, res) => {
                 if (response) {
                     const name = data[0].name;
                     const userRole = data[0].role;
+
+                    // Set the appropriate secret key based on the user role
+                    let secretKey;
                     if (userRole === 'admin') {
-                        const token = jwt.sign({name}, process.env.SECRET_KEY , {expiresIn: '1d'});
-                        res.cookie('token', token);
-                        return res.json({ Status: "Success", Role: "admin" });
+                        secretKey = process.env.ADMIN_TOKEN;
                     } else if (userRole === 'user') {
-                        const token = jwt.sign({name}, process.env.SECRET_KEY , {expiresIn: '1d'});
-                        res.cookie('token', token);
-                        return res.json({ Status: "Success", Role: "user" });
+                        secretKey = process.env.USER_TOKEN;
                     } else {
                         return res.json({ Error: "Invalid user role" });
                     }
+                    
+                    // Sign the token using the selected secret key
+                    const token = jwt.sign({ name }, secretKey, { expiresIn: '1d' });
+                    res.cookie('token', token);
+
+                    return res.json({ Status: "Success", Role: userRole });
                 } else {
                     return res.json({ Error: "Password not matched" });
                 }
@@ -132,9 +137,23 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-    res.clearCookie('token');
+    res.cookie('token', '', { expires: new Date(0) });
     return res.json({ Status: 'Success' });
 });
+
+app.get('/data', (req, res) => {
+    const query = 'SELECT * FROM users'; // Replace with your actual table name
+  
+    db.query(query, (err, result) => {
+      if (err) {
+        console.error('Error executing MySQL query:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+  
+      res.json(result);
+    });
+  });
 
 app.listen(3000, () => {
     console.log("Server is running...");

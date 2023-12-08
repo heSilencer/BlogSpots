@@ -1,8 +1,9 @@
+// Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { registrationSchema } from '../validations/userController';
-import '../App.css'
+import { Form, Button, Container, Row, Col, Card, Navbar, Nav } from 'react-bootstrap';
 
 function Register() {
   const [values, setValues] = useState({
@@ -19,12 +20,12 @@ function Register() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
       await registrationSchema.validate(values, { abortEarly: false });
       // Validation successful, proceed with registration
       const response = await axios.post('http://localhost:3000/register', values);
-      
+
       if (response && response.data && response.data.Status === 'Success') {
         navigate('/login');
       } else if (response && response.data && response.data.Status === "Email already exists") {
@@ -41,7 +42,6 @@ function Register() {
         error.inner.forEach(err => {
           validationErrors[err.path] = err.message;
         });
-        // console.log('Validation Errors:', validationErrors);
         alert(error.errors);
       } else {
         // Handle other types of errors
@@ -52,69 +52,104 @@ function Register() {
 
   return (
     <>
-    <div className="home">
-      <div className="row">
-        <div className="col1">  
-          <h2>Welcome Back!</h2>
-          <p>To keep connected with us please sign up with your personal info</p>
-        </div>
-        <div className="col2">
-          <h2>REGISTER</h2>
-          <form onSubmit={handleSubmit}>
-            <input
-              onChange={(e) => setValues({ ...values, name: e.target.value })}
-              type="text"
-              name="name"
-              placeholder="Name"
-              autoComplete="new-name"
-            />
-            <input
-              onChange={(e) => setValues({ ...values, username: e.target.value })}
-              type="text"
-              name="username"
-              placeholder="Username"
-              autoComplete="username"
-            />
-            <input
-              onChange={(e) => setValues({ ...values, birthdate: e.target.value })}
-              type="date"
-              name="birthdate"
-              placeholder="Email"
-              autoComplete="birthdate"
-            />
-            {/* <select
-            onChange={(e) => setValues({ ...values, role: e.target.value })}
-            name="role">
-              <option defaultValue={""}>Select Role</option>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select> */}
-            <input
-              onChange={(e) => setValues({ ...values, email: e.target.value })}
-              type="text"
-              name="email"
-              placeholder="Email"
-              autoComplete="email"
-            />
-            <input
-              onChange={(e) => setValues({ ...values, password: e.target.value })}
-              type="password"
-              name="password"
-              placeholder="Password"
-              autoComplete="new-password"
-            />
-            <input
-              onChange={(e) => setValues({ ...values, confirmPassword: e.target.value })}
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm password"
-            />
-            <input className="button" type="submit" value="Register" />
-          </form>
-          <a href="/login">Already have an account? Login Here</a>
-        </div>
-      </div>
-    </div>
+    <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
+      <Navbar.Brand href="/">ShoPay</Navbar.Brand>
+      {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
+      <Navbar.Collapse id="basic-navbar-nav">
+        <Nav className="ml-auto">
+          <Nav.Link href="/">Home</Nav.Link>
+        </Nav>
+      </Navbar.Collapse> */}
+    </Navbar>
+
+      <Container className="mt-5 pt-5">
+      <Row className="justify-content-md-center">
+        <Col md={6}>
+          <Card>
+            <Card.Body>
+              <Card.Title>Registration</Card.Title>
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className='mt-3'>
+                  <Form.Label>Complete Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="name"
+                    placeholder="Complete name"
+                    onChange={(e) => setValues({ ...values, name: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Username</Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    onChange={(e) => setValues({ ...values, username: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    name="email"
+                    placeholder="Email"
+                    onChange={(e) => setValues({ ...values, email: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Birthdate</Form.Label>
+                  <Form.Control
+                    type="date"
+                    name="birthdate"
+                    placeholder="Birthdate"
+                    onChange={(e) => setValues({ ...values, birthdate: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Label>Role</Form.Label>
+                <Form.Select aria-label="Default select example">
+                  <option>Select Role</option>
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </Form.Select>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    onChange={(e) => setValues({ ...values, password: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Form.Group className='mt-2'>
+                  <Form.Label>Confirm Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    name="confirmPassword"
+                    placeholder="Password"
+                    onChange={(e) => setValues({ ...values, confirmPassword: e.target.value })}
+                  />
+                </Form.Group>
+
+                <Button variant="success" type="submit" className='mt-3'>
+                  Register
+                </Button>
+              </Form>
+              <div className="mt-3">
+                <p>
+                  Already have an account? <a href="/login">Login here</a>.
+                </p>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
     </>
   );
 }

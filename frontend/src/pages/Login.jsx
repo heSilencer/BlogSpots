@@ -13,6 +13,7 @@ function Login() {
   });
 
   const navigate = useNavigate();
+  axios.defaults.withCredentials = true;
 
   const handleSubmit = async (event) => {
     event.preventDefault();

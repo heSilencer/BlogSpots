@@ -3,22 +3,32 @@ import mysql from 'mysql';
 import cors from 'cors'; 
 import bcrypt from 'bcrypt';
 import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser';
 
 const salt = 10;
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: ["http://localhost:5173"],
+    methods: ["POST", "GET"],
+    credentials: true
+}));
 app.use(express.json());
 app.use(cookieParser());
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    port: process.env.DB_PORT,
+    // host: process.env.DB_HOST,
+    // user: process.env.DB_USER,
+    // password: process.env.DB_PASSWORD,
+    // database: process.env.DB_DATABASE,
+    // port: process.env.DB_PORT,
+
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'mydatabase'
 });
 
 db.connect((err) => {
@@ -98,10 +108,15 @@ app.post('/login', (req, res) => {
                 if (err) return res.json({ Error: "Password compare error" });
 
                 if (response) {
+                    const name = data[0].name;
                     const userRole = data[0].role;
                     if (userRole === 'admin') {
+                        const token = jwt.sign({name}, process.env.SECRET_KEY , {expiresIn: '1d'});
+                        res.cookie('token', token);
                         return res.json({ Status: "Success", Role: "admin" });
                     } else if (userRole === 'user') {
+                        const token = jwt.sign({name}, process.env.SECRET_KEY , {expiresIn: '1d'});
+                        res.cookie('token', token);
                         return res.json({ Status: "Success", Role: "user" });
                     } else {
                         return res.json({ Error: "Invalid user role" });
@@ -114,6 +129,11 @@ app.post('/login', (req, res) => {
             return res.json({ Error: "No email existed" });
         }
     });
+});
+
+app.post('/logout', (req, res) => {
+    res.clearCookie('token');
+    return res.json({ Status: 'Success' });
 });
 
 app.listen(3000, () => {

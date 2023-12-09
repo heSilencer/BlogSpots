@@ -38,7 +38,7 @@ db.connect((err) => {
         console.log('Connected to the database');
     }
 });
-
+// Registration
 app.post('/register', (req, res) => {
     const checkEmailQuery = "SELECT * FROM users WHERE email = ?";
     const checkUsernameQuery = "SELECT * FROM users WHERE username = ?";
@@ -95,9 +95,7 @@ app.post('/register', (req, res) => {
         });
     });
 });
-
-
-
+//Login
 app.post('/login', (req, res) => {
     const sql = 'SELECT * FROM users WHERE email = ?';
     db.query(sql, [req.body.email], (err, data) => {
@@ -135,12 +133,12 @@ app.post('/login', (req, res) => {
         }
     });
 });
-
+//Logout
 app.post('/logout', (req, res) => {
     res.cookie('token', '', { expires: new Date(0) });
     return res.json({ Status: 'Success' });
 });
-
+//get all user
 app.get('/data', (req, res) => {
     const query = 'SELECT * FROM users'; // Replace with your actual table name
   
@@ -154,7 +152,61 @@ app.get('/data', (req, res) => {
       res.json(result);
     });
   });
+//get Product
+app.get('/product', (req, res) => {
+const query = 'SELECT * FROM product';
 
+db.query(query, (err, result) => {
+    if (err) {
+    console.error('Error executing MySQL query:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+    return;
+    }
+
+    res.json(result);
+    });
+});
+//add Product
+app.post('/add_product', async (req, res) => {
+    const checkProductNameQuery = "SELECT * FROM product WHERE product_name = ?";
+    const insertProductQuery = "INSERT INTO product (`product_name`, `product_description`, `product_photo`, `product_qty`) VALUES (?)";
+  
+    try {
+      // Check if the product name already exists
+      db.query(checkProductNameQuery, [req.body.product_name], (errProductName, resultProductName) => {
+        if (errProductName) {
+          console.error("Error checking product name:", errProductName);
+          return res.status(500).json({ Error: "Internal Server Error" });
+        }
+  
+        if (resultProductName.length > 0) {
+          return res.json({ Status: "Product name already exists" });
+        }
+  
+        // Product name doesn't exist, proceed to insert the product into the database
+        const values = [
+          req.body.product_name,
+          req.body.product_description,
+          req.body.product_photo,
+          req.body.product_qty,
+        ];
+  
+        // Insert the product into the database
+        db.query(insertProductQuery, [values], (insertErr, insertResult) => {
+          if (insertErr) {
+            console.error("Error inserting product:", insertErr);
+            return res.status(500).json({ Error: "Internal Server Error" });
+          }
+  
+          return res.status(201).json({ Status: "Product added successfully" });
+        });
+      });
+    } catch (error) {
+      console.error('Error adding product:', error.message);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+});
+  
 app.listen(3000, () => {
     console.log("Server is running...");
 })

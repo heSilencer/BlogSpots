@@ -14,3 +14,10 @@ export const loginSchema = yup.object().shape({
   email: yup.string().email('\nInvalid email').required('\nEmail is required'),
   password: yup.string().required('\nPassword is required'),
 });
+
+export const productSchema = yup.object().shape({
+  product_name: yup.string().required('\nProduct name is required'),
+  product_description: yup.string().required('\nProduct description is required'),
+  product_photo: yup.string().url('\nInvalid URL format').required('\nProduct photo URL is required'),
+  product_qty: yup.number().integer('\nQuantity must be an integer').positive('\nQuantity must be positive').required('\nQuantity is required'),
+});

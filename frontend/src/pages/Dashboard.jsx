@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Navbar, Nav, Button, Table, Modal, Form } from 'react-bootstrap';
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -29,10 +31,20 @@ function Dashboard() {
     };
 
   return (
-    <div>
-        <h1>Dashboard</h1>
-        <button onClick={handleLogout}>Logout</button>
-    </div>
+    <>
+    <Navbar bg="success" variant="dark" expand="lg" fixed="top" className="p-2">
+        <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            <Button variant="light" onClick={handleLogout}>Logout</Button>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
+      <div className="container mt-4"><br /><br /><br />
+        <h1>DASHBOARD</h1>
+      </div>
+    </>
   )
 }
 

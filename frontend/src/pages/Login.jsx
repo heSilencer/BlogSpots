@@ -46,7 +46,7 @@ function Login() {
   return (
     <>
       <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
-      <Navbar.Brand href="/">ShoPay</Navbar.Brand>
+      <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
       {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="ml-auto">
@@ -60,7 +60,7 @@ function Login() {
         <Col md={6}>
           <Card>
             <Card.Body>
-              <Card.Title>Login</Card.Title>
+              <h1>Login</h1>
               <Form onSubmit={handleSubmit}>
                 <Form.Group controlId='formBasicEmail' className='mt-3'>
                   <Form.Label>Email address</Form.Label>

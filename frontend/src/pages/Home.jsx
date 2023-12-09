@@ -5,7 +5,7 @@ function Home() {
   return (
     <>
       <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
-        <Navbar.Brand href="/">ShoPay</Navbar.Brand>
+        <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">

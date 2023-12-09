@@ -53,13 +53,7 @@ function Register() {
   return (
     <>
     <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
-      <Navbar.Brand href="/">ShoPay</Navbar.Brand>
-      {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto">
-          <Nav.Link href="/">Home</Nav.Link>
-        </Nav>
-      </Navbar.Collapse> */}
+      <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
     </Navbar>
 
       <Container className="mt-5 pt-5">
@@ -67,14 +61,14 @@ function Register() {
         <Col md={6}>
           <Card>
             <Card.Body>
-              <Card.Title>Registration</Card.Title>
+              <h1>Registration</h1>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className='mt-3'>
                   <Form.Label>Complete Name</Form.Label>
                   <Form.Control
                     type="text"
                     name="name"
-                    placeholder="Complete name"
+                    placeholder="Enter complete name"
                     onChange={(e) => setValues({ ...values, name: e.target.value })}
                   />
                 </Form.Group>
@@ -84,7 +78,7 @@ function Register() {
                   <Form.Control
                     type="text"
                     name="username"
-                    placeholder="Username"
+                    placeholder="Enter username"
                     onChange={(e) => setValues({ ...values, username: e.target.value })}
                   />
                 </Form.Group>
@@ -94,7 +88,7 @@ function Register() {
                   <Form.Control
                     type="email"
                     name="email"
-                    placeholder="Email"
+                    placeholder="Enter email"
                     onChange={(e) => setValues({ ...values, email: e.target.value })}
                   />
                 </Form.Group>
@@ -109,19 +103,12 @@ function Register() {
                   />
                 </Form.Group>
 
-                <Form.Label>Role</Form.Label>
-                <Form.Select aria-label="Default select example">
-                  <option>Select Role</option>
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </Form.Select>
-
                 <Form.Group className='mt-2'>
                   <Form.Label>Password</Form.Label>
                   <Form.Control
                     type="password"
                     name="password"
-                    placeholder="Password"
+                    placeholder="Enter password"
                     onChange={(e) => setValues({ ...values, password: e.target.value })}
                   />
                 </Form.Group>
@@ -131,7 +118,7 @@ function Register() {
                   <Form.Control
                     type="password"
                     name="confirmPassword"
-                    placeholder="Password"
+                    placeholder="Confirm password"
                     onChange={(e) => setValues({ ...values, confirmPassword: e.target.value })}
                   />
                 </Form.Group>

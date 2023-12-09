@@ -16,8 +16,8 @@ export const loginSchema = yup.object().shape({
 });
 
 export const productSchema = yup.object().shape({
-  product_name: yup.string().required('\nProduct name is required'),
-  product_description: yup.string().required('\nProduct description is required'),
-  product_photo: yup.string().url('\nInvalid URL format').required('\nProduct photo URL is required'),
-  product_qty: yup.number().integer('\nQuantity must be an integer').positive('\nQuantity must be positive').required('\nQuantity is required'),
+  product_name: yup.string().required('Product name is required'),
+  product_description: yup.string().required('Product description is required'),
+  product_photo: yup.string().url('Invalid URL format').required('Product photo URL is required'),
+  product_qty: yup.number().integer('Quantity must be an integer').positive('Quantity must be positive').required('Quantity is required'),
 });

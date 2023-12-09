@@ -90,7 +90,7 @@ function AdminPage() {
 
   const handleDelete = (itemId) => {
     // Implement the logic for deleting an item
-    console.log(`Deleting item with ID ${itemId}`);
+    console.log(`Deleting item with ID`);
   };
 
   const handleCloseModal = () => {
@@ -175,9 +175,7 @@ function AdminPage() {
                       <td>{user.role}</td>
                       <td>{user.email}</td>
                       <td>
-                        <Button variant="danger" onClick={() => handleDelete(item.id)}>
-                          Delete
-                        </Button>
+                        <Button variant="danger">Delete</Button>
                       </td>
                     </tr>
                   ))}
@@ -207,9 +205,7 @@ function AdminPage() {
                   <td>{product.product_description}</td>
                   <td>{product.product_qty}</td>
                   <td>
-                    <Button variant="danger" onClick={() => handleDelete(itemId)}>
-                      Delete
-                    </Button>
+                    <Button variant="danger">Delete</Button>
                   </td>
                 </tr>
               ))}

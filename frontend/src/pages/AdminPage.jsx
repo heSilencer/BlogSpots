@@ -88,26 +88,32 @@ function AdminPage() {
       });
   };
 
-  const handleDelete = (itemId) => {
-    // Implement the logic for deleting an item
-    console.log(`Deleting item with ID`);
-  };
-
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
-  const handleUpdate = (itemId) => {
-    setSelectedItemId(itemId);
-    setShowModal(true);
+  const handleDelete = async (itemId, itemType) => {
+    try {
+      const response = await axios.delete(`http://localhost:3000/delete/${itemType}/${itemId}`);
+      
+      if (response && response.data && response.data.Status === 'Item deleted successfully') {
+        // Item deleted successfully
+        alert(response.data.Status);
   
-    // Find the selected item data from the userData array
-    const selectedUserData = userData.find((user) => user.id === itemId);
-  
-    // If not found in userData, try finding in productData array
-    const selectedItem = selectedUserData || productData.find((product) => product.id === itemId);
-  
-    setSelectedItemData(selectedItem);
+        // Update the state to reflect the changes
+        if (itemType === 'user') {
+          const updatedUserData = userData.filter(user => user.id !== itemId);
+          setUserData(updatedUserData);
+        } else if (itemType === 'product') {
+          const updatedProductData = productData.filter(product => product.product_id !== itemId);
+          setProductData(updatedProductData);
+        }
+      } else {
+        console.error('Unexpected response structure:', response);
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
   };
 
   useEffect(() => {
@@ -175,7 +181,7 @@ function AdminPage() {
                       <td>{user.role}</td>
                       <td>{user.email}</td>
                       <td>
-                        <Button variant="danger">Delete</Button>
+                        <Button variant="danger"  onClick={() => handleDelete(user.id, 'user')}>Delete</Button>
                       </td>
                     </tr>
                   ))}
@@ -205,7 +211,7 @@ function AdminPage() {
                   <td>{product.product_description}</td>
                   <td>{product.product_qty}</td>
                   <td>
-                    <Button variant="danger">Delete</Button>
+                    <Button variant="danger" onClick={() => handleDelete(product.product_id, 'product')}>Delete</Button>
                   </td>
                 </tr>
               ))}

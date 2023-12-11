@@ -10,6 +10,16 @@ const salt = 10;
 dotenv.config();
 
 const app = express();
+// Updated CORS middleware
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+  };
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(cookieParser());
+
 app.use(cors({
     origin: ["http://localhost:5173"],
     methods: ["POST", "GET"],
@@ -205,6 +215,29 @@ app.post('/add_product', async (req, res) => {
       console.error('Error adding product:', error.message);
       res.status(500).json({ message: 'Internal server error' });
     }
+});
+app.delete('/delete/:itemType/:itemId', (req, res) => {
+    const { itemType, itemId } = req.params;
+    let tableName;
+
+    if (itemType === 'user') {
+        tableName = 'users';
+    } else if (itemType === 'product') {
+        tableName = 'product';
+    } else {
+        return res.status(400).json({ Error: 'Invalid item type' });
+    }
+
+    const deleteQuery = `DELETE FROM ${tableName} WHERE ${itemType === 'user' ? 'id' : 'product_id'} = ?`;
+
+    db.query(deleteQuery, [itemId], (err, result) => {
+        if (err) {
+            console.error('Error deleting item:', err);
+            return res.status(500).json({ Error: 'Internal Server Error' });
+        }
+
+        return res.json({ Status: 'Item deleted successfully' });
+    });
 });
   
 app.listen(3000, () => {

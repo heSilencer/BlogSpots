@@ -1,4 +1,3 @@
-// Register.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -23,7 +22,6 @@ function Register() {
 
     try {
       await registrationSchema.validate(values, { abortEarly: false });
-      // Validation successful, proceed with registration
       const response = await axios.post('http://localhost:3000/register', values);
 
       if (response && response.data && response.data.Status === 'Success') {
@@ -44,7 +42,6 @@ function Register() {
         });
         alert(error.errors);
       } else {
-        // Handle other types of errors
         console.error('Unexpected error:', error);
       }
     }

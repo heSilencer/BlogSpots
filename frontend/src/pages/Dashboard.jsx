@@ -8,7 +8,6 @@ function Dashboard() {
   const [productData, setProductData] = useState([]);
 
   useEffect(() => {
-    // Fetch data from your backend API endpoint (replace with your actual endpoint)
     fetch('http://localhost:3000/product')
       .then((response) => response.json())
       .then((responseData) => {
@@ -20,10 +19,9 @@ function Dashboard() {
   }, []);
 
     const handleLogout = () => {
-        // Make a POST request to the logout endpoint
         fetch('http://localhost:3000/logout', {
             method: 'POST',
-            credentials: 'include', // Include credentials (cookies) in the request
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -31,7 +29,6 @@ function Dashboard() {
         .then(response => response.json())
         .then(data => {
             if (data.Status === 'Success') {
-                // Redirect to the home page after successful logout
                 console.log('Logout Successfully');
                 navigate('/');
             } else {

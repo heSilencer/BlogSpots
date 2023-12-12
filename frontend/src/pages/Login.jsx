@@ -20,7 +20,6 @@ function Login() {
     try {
       await loginSchema.validate(values, { abortEarly: false });
 
-      // Validation successful, proceed with login
       const response = await axios.post('http://localhost:3000/login', values);
 
       if (response.data.Status === 'Success') {
@@ -38,7 +37,6 @@ function Login() {
         alert(response.data.Error);
       }
     } catch (error) {
-      // Validation failed, handle errors
       alert(error.errors);
     }
   };
@@ -47,12 +45,6 @@ function Login() {
     <>
       <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
       <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
-      {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
-      <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="ml-auto">
-          <Nav.Link href="/">Home</Nav.Link>
-        </Nav>
-      </Navbar.Collapse> */}
     </Navbar>
 
     <Container className='pt-5 mx-auto m-5'>

@@ -34,11 +34,6 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     port: process.env.DB_PORT,
-
-    // host: 'localhost',
-    // user: 'root',
-    // password: '',
-    // database: 'mydatabase'
 });
 
 db.connect((err) => {

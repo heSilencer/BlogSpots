@@ -23,14 +23,11 @@ function AdminPage() {
   
     try {
       await productSchema.validate(values, { abortEarly: false });
-      // Validation successful, proceed with product addition
       const response = await axios.post('http://localhost:3000/add_product', values);
   
       if (response && response.data && response.data.Status === 'Product added successfully') {
-        // Product added successfully
         alert(response.data.Status);
   
-        // Clear the input fields by resetting the state
         setValues({
           product_name: '',
           product_description: '',
@@ -38,7 +35,6 @@ function AdminPage() {
           product_qty: 0,
         });
   
-        // Optionally, you can navigate to another page or perform other actions
 
         setTimeout(() => {
           window.location.reload();
@@ -50,14 +46,12 @@ function AdminPage() {
       }
     } catch (error) {
       if (error.name === 'ValidationError') {
-        // Handle validation errors
         const validationErrors = {};
         error.inner.forEach((err) => {
           validationErrors[err.path] = err.message;
         });
         alert(Object.values(validationErrors).join('\n'));
       } else {
-        // Handle other types of errors
         console.error('Unexpected error:', error);
       }
     }
@@ -97,10 +91,8 @@ function AdminPage() {
       const response = await axios.delete(`http://localhost:3000/delete/${itemType}/${itemId}`);
       
       if (response && response.data && response.data.Status === 'Item deleted successfully') {
-        // Item deleted successfully
         alert(response.data.Status);
   
-        // Update the state to reflect the changes
         if (itemType === 'user') {
           const updatedUserData = userData.filter(user => user.id !== itemId);
           setUserData(updatedUserData);
@@ -117,11 +109,9 @@ function AdminPage() {
   };
 
   useEffect(() => {
-    // Make a GET request to fetch user data from the server
     fetch('http://localhost:3000/data')
       .then((response) => response.json())
       .then((responseData) => {
-        // Set the retrieved user data to the state
         setUserData(responseData);
       })
       .catch((error) => {
@@ -130,11 +120,9 @@ function AdminPage() {
   }, []);
 
   useEffect(() => {
-    // Make a GET request to fetch product data from the server
     fetch('http://localhost:3000/product')
       .then((response) => response.json())
       .then((responseData) => {
-        // Set the retrieved product data to the state
         setProductData(responseData);
       })
       .catch((error) => {
@@ -155,7 +143,6 @@ function AdminPage() {
       </Navbar>
 
       <Tabs defaultActiveKey="user" id="uncontrolled-tab-example" className="mt-5 pl-5 pt-5" fill>
-{/* Manage User */}
         <Tab eventKey="user" title="Manage User"  className='pt-1'>
           <div className="container-fluid p-4 pt-0"><br /><br />
               <h2>Registered User</h2>
@@ -189,7 +176,6 @@ function AdminPage() {
               </Table>
             </div>
         </Tab>
-{/* Manage Product */}
         <Tab eventKey="product" title="Manage Product" className='pt-4'>
         <div className="container-fluid p-4">
           <h2>Product List</h2>
@@ -219,7 +205,6 @@ function AdminPage() {
           </Table>
         </div>
         </Tab>
-{/* Add Product */}
         <Tab eventKey="addproduct" title="Add Product">
           <Container className="mt-2 pt-5">
           <Row className="justify-content-md-center">

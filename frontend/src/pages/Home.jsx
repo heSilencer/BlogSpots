@@ -5,7 +5,6 @@ function YourComponent() {
   const [productData, setProductData] = useState([]);
 
   useEffect(() => {
-    // Fetch data from your backend API endpoint (replace with your actual endpoint)
     fetch('http://localhost:3000/product')
       .then((response) => response.json())
       .then((responseData) => {

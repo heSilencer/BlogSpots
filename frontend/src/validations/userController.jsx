@@ -5,7 +5,6 @@ export const registrationSchema = yup.object().shape({
   username: yup.string().required('\nUsername is required'),
   birthdate: yup.string().required('\nBirthdate is required'),
   email: yup.string().email('\nInvalid email').required('\nEmail is required'),
-  role: yup.string().required('\nRole is required').oneOf(['user', 'admin'], '\nInvalid role'),
   password: yup.string().min(8, '\nPassword must be at least 8 characters'),
   confirmPassword: yup.string().oneOf([yup.ref('password'), null], '\nPasswords must match').required('\nConfirm password is required'),
 });
@@ -16,8 +15,8 @@ export const loginSchema = yup.object().shape({
 });
 
 export const productSchema = yup.object().shape({
-  product_name: yup.string().required('Product name is required'),
-  product_description: yup.string().required('Product description is required'),
-  product_photo: yup.string().url('Invalid URL format').required('Product photo URL is required'),
-  product_qty: yup.number().integer('Quantity must be an integer').positive('Quantity must be positive').required('Quantity is required'),
+  title: yup.string().required('Blog name is required'),
+  description: yup.string().required('Blog description is required'),
+  image: yup.string().url('Invalid URL format').required('Product photo URL is required'),
+  author: yup.string().required('Author is required'),
 });

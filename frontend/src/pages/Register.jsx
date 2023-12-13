@@ -49,8 +49,8 @@ function Register() {
 
   return (
     <>
-    <Navbar bg="success" variant="dark" expand="lg" fixed="top" className='p-3'>
-      <Navbar.Brand href="/"><strong>ShoPay</strong></Navbar.Brand>
+      <Navbar style={{ backgroundColor: 'darkblue', color: 'darkblue' }} variant="dark" expand="lg" fixed="top" className='p-3'>
+      <Navbar.Brand href="/"><strong>Ming Mingle</strong></Navbar.Brand>
     </Navbar>
 
       <Container className="mt-5 pt-5">
@@ -120,7 +120,7 @@ function Register() {
                   />
                 </Form.Group>
 
-                <Button variant="success" type="submit" className='mt-3'>
+                <Button variant="primary" type="submit" className='mt-3'>
                   Register
                 </Button>
               </Form>

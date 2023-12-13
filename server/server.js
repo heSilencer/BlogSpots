@@ -43,6 +43,36 @@ db.connect((err) => {
         console.log('Connected to the database');
     }
 });
+const verifyToken = (req, res, next) => {
+    const token = req.cookies.token;
+  
+    if (!token) {
+      return res.status(401).json({ Error: 'Unauthorized' });
+    }
+  
+    let secretKey;
+    if (token.startsWith('USER_TOKEN')) {
+      secretKey = process.env.USER_TOKEN_SECRET;
+    } else if (token.startsWith('ADMIN_TOKEN')) {
+      secretKey = process.env.ADMIN_TOKEN_SECRET;
+    } else {
+      return res.status(401).json({ Error: 'Invalid token type' });
+    }
+  
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ Error: 'Invalid token' });
+      }
+  
+      req.user = decoded;
+  
+      if (req.path.startsWith('/admin') && req.user.role !== 'admin') {
+        return res.status(403).json({ Error: 'Access forbidden for this role' });
+      }
+  
+      next();
+    });
+  };
 // Registration
 app.post('/register', (req, res) => {
     const checkEmailQuery = "SELECT * FROM users WHERE email = ?";
@@ -124,8 +154,8 @@ app.post('/login', (req, res) => {
                         return res.json({ Error: "Invalid user role" });
                     }
                     
-                    // Sign the token using the selected secret key
-                    const token = jwt.sign({ name }, secretKey, { expiresIn: '1d' });
+                    // Sign the token using the selected secret key and include role information
+                    const token = jwt.sign({ name, role: userRole }, secretKey, { expiresIn: '1d' });
                     res.cookie('token', token);
 
                     return res.json({ Status: "Success", Role: userRole });
@@ -138,6 +168,7 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
 //Logout
 app.post('/logout', (req, res) => {
     res.cookie('token', '', { expires: new Date(0) });
@@ -157,57 +188,57 @@ app.get('/data', (req, res) => {
       res.json(result);
     });
   });
-//get Product
-app.get('/product', (req, res) => {
-const query = 'SELECT * FROM product';
-
-db.query(query, (err, result) => {
-    if (err) {
-    console.error('Error executing MySQL query:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
-    return;
-    }
-
-    res.json(result);
+//get Content
+app.get('/content', (req, res) => {
+    const query = 'SELECT * FROM content';
+    
+    db.query(query, (err, result) => {
+        if (err) {
+        console.error('Error executing MySQL query:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+        }
+    
+        res.json(result);
+        });
     });
-});
-//add Product
-app.post('/add_product', async (req, res) => {
-    const checkProductNameQuery = "SELECT * FROM product WHERE product_name = ?";
-    const insertProductQuery = "INSERT INTO product (`product_name`, `product_description`, `product_photo`, `product_qty`) VALUES (?)";
+//add Content
+app.post('/add_content', async (req, res) => {
+    const checkContentQuery = "SELECT * FROM content WHERE title = ?";
+    const insertContentQuery = "INSERT INTO content (`title`, `description`, `author`, `image`) VALUES (?)";
   
     try {
       // Check if the product name already exists
-      db.query(checkProductNameQuery, [req.body.product_name], (errProductName, resultProductName) => {
-        if (errProductName) {
-          console.error("Error checking product name:", errProductName);
+      db.query(checkContentQuery, [req.body.title], (errtitle, resultTitle) => {
+        if (errtitle) {
+          console.error("Error checking content name:", errtitle);
           return res.status(500).json({ Error: "Internal Server Error" });
         }
   
-        if (resultProductName.length > 0) {
-          return res.json({ Status: "Product name already exists" });
+        if (resultTitle.length > 0) {
+          return res.json({ Status: "Content name already exists" });
         }
   
         // Product name doesn't exist, proceed to insert the product into the database
         const values = [
-          req.body.product_name,
-          req.body.product_description,
-          req.body.product_photo,
-          req.body.product_qty,
+          req.body.title,
+          req.body.description,
+          req.body.author,
+          req.body.image,
         ];
   
         // Insert the product into the database
-        db.query(insertProductQuery, [values], (insertErr, insertResult) => {
+        db.query(insertContentQuery, [values], (insertErr, insertResult) => {
           if (insertErr) {
-            console.error("Error inserting product:", insertErr);
+            console.error("Error inserting content:", insertErr);
             return res.status(500).json({ Error: "Internal Server Error" });
           }
   
-          return res.status(201).json({ Status: "Product added successfully" });
+          return res.status(201).json({ Status: "Content added successfully" });
         });
       });
     } catch (error) {
-      console.error('Error adding product:', error.message);
+      console.error('Error adding content:', error.message);
       res.status(500).json({ message: 'Internal server error' });
     }
 });
@@ -217,13 +248,13 @@ app.delete('/delete/:itemType/:itemId', (req, res) => {
 
     if (itemType === 'user') {
         tableName = 'users';
-    } else if (itemType === 'product') {
-        tableName = 'product';
+    } else if (itemType === 'content') {
+        tableName = 'content';
     } else {
         return res.status(400).json({ Error: 'Invalid item type' });
     }
 
-    const deleteQuery = `DELETE FROM ${tableName} WHERE ${itemType === 'user' ? 'id' : 'product_id'} = ?`;
+    const deleteQuery = `DELETE FROM ${tableName} WHERE ${itemType === 'user' ? 'id' : 'id'} = ?`;
 
     db.query(deleteQuery, [itemId], (err, result) => {
         if (err) {
@@ -234,6 +265,88 @@ app.delete('/delete/:itemType/:itemId', (req, res) => {
         return res.json({ Status: 'Item deleted successfully' });
     });
 });
+
+//navagite to read More
+app.get('/content/:contentId', (req, res) => {
+    const contentId = req.params.contentId;
+    const query = 'SELECT * FROM content WHERE id = ?';
+
+    db.query(query, [contentId], (err, result) => {
+        if (err) {
+            console.error('Error executing MySQL query:', err);
+            res.status(500).json({ error: 'Internal Server Error' });
+            return;
+        }
+
+        if (result.length === 0) {
+            res.status(404).json({ error: 'Content not found' });
+            return;
+        }
+
+        res.json(result[0]); // Return the first (and only) result
+    });
+});
+
+
+////Adding comment
+// Import the authenticateUser middleware
+const authenticateUser = (req, res, next) => {
+    const token = req.cookies.token;
+  
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.USER_TOKEN);
+      req.user = decoded;
+      next();
+    } catch (error) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+  };
+  
+  // ...
+  
+  // Adding comment
+//   app.post('/add_comment/:contentTitle', authenticateUser, (req, res) => {
+//     const { contentId } = req.params;
+//     const { comment } = req.body;
+  
+//     const { name } = req.user;
+  
+//     const insertCommentQuery = "INSERT INTO comments (`content_id`, `user_name`, `comment_text`) VALUES (?, ?, ?)";
+  
+//     db.query(insertCommentQuery, [contentId, name, comment], (insertErr, insertResult) => {
+//       if (insertErr) {
+//         console.error("Error inserting comment:", insertErr);
+//         return res.status(500).json({ Error: "Internal Server Error" });
+//       }
+  
+//       return res.json({ Status: "Success", message: "Comment added successfully"});
+//     });
+//   });
+  ////get comments
+
+  // Modify the existing route to fetch comments for a content
+app.get('/comments/:contentId', (req, res) => {
+    const { contentId } = req.params;
+    const getCommentsQuery = "SELECT comments.*, users.name AS user_name FROM comments INNER JOIN users ON comments.user_id = users.id WHERE comments.content_id = ?";
+  
+    // Fetch comments with user information from the database
+    db.query(getCommentsQuery, [contentId], (err, result) => {
+      if (err) {
+        console.error('Error fetching comments:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+        return;
+      }
+  
+      res.json(result);
+    });
+});
+
+  
+
   
 app.listen(3000, () => {
     console.log("Server is running...");

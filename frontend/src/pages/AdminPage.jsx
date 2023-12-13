@@ -7,15 +7,15 @@ import { productSchema } from '../validations/userController';
 
 function AdminPage() {
   const [userData, setUserData] = useState([]);
-  const [productData, setProductData] = useState([]);
+  const [contentData, setContentData] = useState([]);
   const [selectedItemData, setSelectedItemData] = useState(null);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [values, setValues] = useState({
-    product_name: '',
-    product_description: '',
-    product_photo: '',
-    product_qty: 0,
+        title: '',
+        description: '',
+        author: '',
+        image: '',
   });
 
   const handleSubmit = async (event) => {
@@ -23,23 +23,23 @@ function AdminPage() {
   
     try {
       await productSchema.validate(values, { abortEarly: false });
-      const response = await axios.post('http://localhost:3000/add_product', values);
+      const response = await axios.post('http://localhost:3000/add_content', values);
   
-      if (response && response.data && response.data.Status === 'Product added successfully') {
+      if (response && response.data && response.data.Status === 'Content added successfully') {
         alert(response.data.Status);
   
         setValues({
-          product_name: '',
-          product_description: '',
-          product_photo: '',
-          product_qty: 0,
+          title: '',
+          description: '',
+          author: '',
+          image: '',
         });
   
 
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-      } else if (response && response.data && response.data.Status === 'Product name already exists') {
+      } else if (response && response.data && response.data.Status === 'Content name already exists') {
         alert(response.data.Status);
       } else {
         console.error('Unexpected response structure:', response);
@@ -96,9 +96,9 @@ function AdminPage() {
         if (itemType === 'user') {
           const updatedUserData = userData.filter(user => user.id !== itemId);
           setUserData(updatedUserData);
-        } else if (itemType === 'product') {
-          const updatedProductData = productData.filter(product => product.product_id !== itemId);
-          setProductData(updatedProductData);
+        } else if (itemType === 'content') {
+          const updatedContentData = contentData.filter(product => product.product_id !== itemId);
+          setContentData(updatedContentData);
         }
       } else {
         console.error('Unexpected response structure:', response);
@@ -120,10 +120,10 @@ function AdminPage() {
   }, []);
 
   useEffect(() => {
-    fetch('http://localhost:3000/product')
+    fetch('http://localhost:3000/content')
       .then((response) => response.json())
       .then((responseData) => {
-        setProductData(responseData);
+        setContentData(responseData);
       })
       .catch((error) => {
         console.error('Error fetching product data:', error);
@@ -132,28 +132,28 @@ function AdminPage() {
 
   return (
     <>
-      <Navbar bg="success" variant="dark" expand="lg" fixed="top" className="p-3">
+        <Navbar style={{ backgroundColor: 'darkblue', color: 'darkblue' }} variant="dark" expand="lg" fixed="top" className='p-3'>
+
         <Navbar.Brand><strong>Admin Panel</strong></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ml-auto">
-            <Button variant="success" onClick={handleLogout}>Logout</Button>
+          <Nav className="w-100 justify-content-end">
+            <Button variant="secondary" onClick={handleLogout}>Logout</Button>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
 
       <Tabs defaultActiveKey="user" id="uncontrolled-tab-example" className="mt-5 pl-5 pt-5" fill>
-        <Tab eventKey="user" title="Manage User"  className='pt-1'>
+        <Tab eventKey="manageuser" title="Manage User"  className='pt-1'>
           <div className="container-fluid p-4 pt-0"><br /><br />
               <h2>Registered User</h2>
-              <Table striped="columns" bordered hover responsive variant="success">
+              <Table striped="columns" bordered hover responsive variant="primary">
                 <thead>
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
                     <th>Username</th>
                     <th>Birthdate</th>
-                    <th>Role</th>
                     <th>Email</th>
                     <th>Action</th>
                   </tr>
@@ -165,7 +165,6 @@ function AdminPage() {
                       <td>{user.name}</td>
                       <td>{user.username}</td>
                       <td>{user.birthdate}</td>
-                      <td>{user.role}</td>
                       <td>{user.email}</td>
                       <td>
                         <Button variant="danger"  onClick={() => handleDelete(user.id, 'user')}>Delete</Button>
@@ -176,28 +175,28 @@ function AdminPage() {
               </Table>
             </div>
         </Tab>
-        <Tab eventKey="product" title="Manage Product" className='pt-4'>
+        <Tab eventKey="managecontent" title="Manage Blog" className='pt-4'>
         <div className="container-fluid p-4">
-          <h2>Product List</h2>
-          <Table striped="columns" bordered hover responsive  variant="success">
+          <h2>Blog List</h2>
+          <Table striped="columns" bordered hover responsive  variant="primary">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Product Name</th>
-                <th>Product Description</th>
-                <th>Product QTY</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Author</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {productData.map((product, index) => (
+              {contentData.map((content, index) => (
                 <tr key={index}>
-                  <td>{product.product_id}</td>
-                  <td>{product.product_name}</td>
-                  <td>{product.product_description}</td>
-                  <td>{product.product_qty}</td>
+                  <td>{content.id}</td>
+                  <td>{content.title}</td>
+                  <td>{content.description}</td>
+                  <td>{content.author}</td>
                   <td>
-                    <Button variant="danger" onClick={() => handleDelete(product.product_id, 'product')}>Delete</Button>
+                    <Button variant="danger" onClick={() => handleDelete(content.id, 'content')}>Delete</Button>
                   </td>
                 </tr>
               ))}
@@ -205,21 +204,21 @@ function AdminPage() {
           </Table>
         </div>
         </Tab>
-        <Tab eventKey="addproduct" title="Add Product">
+        <Tab eventKey="addcontent" title="Add Blog">
           <Container className="mt-2 pt-5">
           <Row className="justify-content-md-center">
           <Col md={6}>
             <Card>
               <Card.Body>
-              <h1>Add Product</h1>
+              <h1>Add Blog</h1>
                 <Form onSubmit={handleSubmit}>
                   <Form.Group className='mt-0'>
-                    <Form.Label>Product Name</Form.Label>
+                    <Form.Label>Title</Form.Label>
                     <Form.Control
                       type="text"
                       name="name"
-                      placeholder="Enter product name"
-                      onChange={(e) => setValues({ ...values, product_name: e.target.value })}
+                      placeholder="Input title"
+                      onChange={(e) => setValues({ ...values, title: e.target.value })}
                     />
                   </Form.Group>
 
@@ -228,8 +227,8 @@ function AdminPage() {
                     <Form.Control
                       type="text"
                       name="username"
-                      placeholder="Enter product description"
-                      onChange={(e) => setValues({ ...values, product_description: e.target.value })}
+                      placeholder="Input description"
+                      onChange={(e) => setValues({ ...values, description: e.target.value })}
                     />
                   </Form.Group>
 
@@ -238,23 +237,23 @@ function AdminPage() {
                     <Form.Control
                       type="text"
                       name="text"
-                      placeholder="Enter product photo url"
-                      onChange={(e) => setValues({ ...values, product_photo: e.target.value })}
+                      placeholder="Input blog photo url"
+                      onChange={(e) => setValues({ ...values, image: e.target.value })}
                     />
                   </Form.Group>
 
                   <Form.Group className='mt-2'>
-                    <Form.Label>Quantity</Form.Label>
+                    <Form.Label>Author</Form.Label>
                     <Form.Control
-                      type="number"
-                      name="quantity"
-                      placeholder="Enter quantity"
-                      onChange={(e) => setValues({ ...values, product_qty: e.target.value })}
+                      type="text"
+                      name="author"
+                      placeholder="Input author"
+                      onChange={(e) => setValues({ ...values, author: e.target.value })}
                     />
                   </Form.Group>
 
-                  <Button variant="success" type="submit" className='mt-3'>
-                    Add Product
+                  <Button variant="primary" type="submit" className='mt-3'>
+                    Add Blog
                   </Button>
                 </Form>
               </Card.Body>

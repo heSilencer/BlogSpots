@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import AdminPage from './pages/AdminPage';
+import BlogDetail from './pages/BlogDetails';
 
 const ProtectedRoute = ({ element, allowedRoles, ...props }) => {
   // Replace the following line with your actual authentication and role-checking logic
@@ -36,6 +37,8 @@ function App() {
           path="/admin"
           element={<ProtectedRoute element={<AdminPage />} allowedRoles={['admin']} />}
         />
+      <Route path="/BlogDetails/:contentId" element={<BlogDetail />} />
+
       </Routes>
     </BrowserRouter>
   );

@@ -4,6 +4,7 @@ import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Nav, Button, Table, Modal, Form, Tab, Tabs, Row, Container, Col, Card, InputGroup } from 'react-bootstrap';
 import { productSchema } from '../validations/userController';
+import UpdateContentModal from './UpdateContentModal';
 
 function AdminPage() {
   const [userData, setUserData] = useState([]);
@@ -11,12 +12,17 @@ function AdminPage() {
   const [selectedItemData, setSelectedItemData] = useState(null);
   const [selectedItemId, setSelectedItemId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedContent, setSelectedContent] = useState(null);
+
   const [values, setValues] = useState({
         title: '',
         description: '',
         author: '',
         image: '',
   });
+
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -56,6 +62,38 @@ function AdminPage() {
       }
     }
   };
+
+  const handleEdit = (content) => {
+    setSelectedContent(content);
+    setShowUpdateModal(true);
+  };
+//update
+  const handleUpdate = async (updatedValues) => {
+    // Ensure you have the authentication token (yourAuthToken) before making the request
+  
+    try {
+      const response = await axios.put(
+        `http://localhost:3000/update_content/${selectedContent.id}`,
+        updatedValues,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`, // Replace yourAuthToken with the actual authentication token
+          },
+        }
+      );
+      if (response && response.data && response.data.Status === 'Content updated successfully') {
+        alert(response.data.Status);
+        setShowUpdateModal(false);
+        // Fetch updated content data
+        fetchContentData();
+      } else {
+        console.error('Unexpected response structure:', response);
+      }
+    } catch (error) {
+      console.error('Error updating content:', error);
+    }
+  };
+
   
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -107,6 +145,7 @@ function AdminPage() {
       console.error('Error deleting item:', error);
     }
   };
+  
 
   useEffect(() => {
     fetch('http://localhost:3000/data')
@@ -130,6 +169,34 @@ function AdminPage() {
       });
   }, []);
 
+  useEffect(() => {
+    fetchUserData();
+    fetchContentData();
+  }, []);
+
+  const fetchUserData = () => {
+    fetch('http://localhost:3000/data')
+      .then((response) => response.json())
+      .then((responseData) => {
+        setUserData(responseData);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+      });
+  };
+
+  const fetchContentData = () => {
+    fetch('http://localhost:3000/content')
+      .then((response) => response.json())
+      .then((responseData) => {
+        setContentData(responseData);
+      })
+      .catch((error) => {
+        console.error('Error fetching content data:', error);
+      });
+  };
+
+  
   return (
     <>
         <Navbar style={{ backgroundColor: 'darkblue', color: 'darkblue' }} variant="dark" expand="lg" fixed="top" className='p-3'>
@@ -175,32 +242,57 @@ function AdminPage() {
               </Table>
             </div>
         </Tab>
+        
         <Tab eventKey="managecontent" title="Manage Blog" className='pt-4'>
+  <div className="container-fluid p-4">
+    <h2>Blog List</h2>
+    <Table striped bordered hover responsive variant="primary">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Author</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {contentData.map((content, index) => (
+          <tr key={index}>
+            <td>{content.id}</td>
+            <td>{content.title}</td>
+            <td>{content.description}</td>
+            <td>{content.author}</td>
+            <td>
+              <Button variant="danger" onClick={() => handleDelete(content.id, 'content')}>
+                Delete
+              </Button>
+              {' '}
+              <Button variant="primary" onClick={() => handleEdit(content)}>
+                Edit
+              </Button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  </div>
+</Tab>
+
+
+        <Tab eventKey="manageccomment" title="Manage Comment" className='pt-4'>
         <div className="container-fluid p-4">
-          <h2>Blog List</h2>
+          <h2>Comment List</h2>
           <Table striped="columns" bordered hover responsive  variant="primary">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Title</th>
-                <th>Description</th>
-                <th>Author</th>
+                <th>Comments</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody>
-              {contentData.map((content, index) => (
-                <tr key={index}>
-                  <td>{content.id}</td>
-                  <td>{content.title}</td>
-                  <td>{content.description}</td>
-                  <td>{content.author}</td>
-                  <td>
-                    <Button variant="danger" onClick={() => handleDelete(content.id, 'content')}>Delete</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            
           </Table>
         </div>
         </Tab>
@@ -263,6 +355,15 @@ function AdminPage() {
         </Container>
         </Tab>
       </Tabs>
+       {/* Add UpdateContentModal here */}
+       {showUpdateModal && (
+        <UpdateContentModal
+          show={showUpdateModal}
+          handleClose={() => setShowUpdateModal(false)}
+          handleUpdate={handleUpdate}
+          content={selectedContent}
+        />
+      )}
     </>
   );
 }

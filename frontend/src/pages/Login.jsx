@@ -76,12 +76,7 @@ function Login() {
                     onChange={(e) => setValues({ ...values, password: e.target.value })}
                     required
                   />
-                   {/* <Button
-                      variant='outline-secondary'
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      {showPassword ? <BsFillEyeSlash /> : <BsFillEye />}
-                    </Button> */}
+                 
                 </Form.Group>
 
                 <Button variant='primary' type='submit' className='w-100 mt-3'>

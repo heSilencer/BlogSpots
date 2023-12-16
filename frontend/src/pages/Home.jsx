@@ -19,7 +19,7 @@ function YourComponent() {
 
   const handleReadMore = (contentId) => {
     // Navigate to the detailed view of the blog post
-    navigate(`/login`);
+    navigate(`/BlogDetails`);
   };
 
   return (

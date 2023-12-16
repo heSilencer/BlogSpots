@@ -266,6 +266,33 @@ app.delete('/delete/:itemType/:itemId', (req, res) => {
     });
 });
 
+
+
+// Update content
+app.put('/update_content/:contentId', verifyToken, (req, res) => {
+  console.log('Received update request with headers:', req.headers);
+  const contentId = req.params.contentId;
+  const updateQuery = "UPDATE content SET title = ?, description = ?, author = ?, image = ? WHERE id = ?";
+
+  const values = [
+      req.body.title,
+      req.body.description,
+      req.body.author,
+      req.body.image,
+      contentId
+  ];
+
+  db.query(updateQuery, values, (updateErr, updateResult) => {
+      if (updateErr) {
+          console.error("Error updating content:", updateErr);
+          return res.status(500).json({ Error: "Internal Server Error" });
+      }
+
+      return res.json({ Status: "Content updated successfully" });
+  });
+});
+
+
 //navagite to read More
 app.get('/content/:contentId', (req, res) => {
     const contentId = req.params.contentId;

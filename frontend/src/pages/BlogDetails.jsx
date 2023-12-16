@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Navbar, Container, Button, Card } from 'react-bootstrap';
 
 function BlogDetail() {
-  const { contentId } = useParams();
+  // const { contentId } = useParams();
   const navigate = useNavigate();
   const [content, setBlogDetails] = useState(null);
   const [comment, setComment] = useState('');
@@ -21,15 +21,7 @@ function BlogDetail() {
         console.error('Error fetching blog details:', error);
       });
 
-    // Fetch comments for the content
-    // fetch(`http://localhost:3000/comments/${contentId}`)
-    //   .then((response) => response.json())
-    //   .then((responseData) => {
-    //     setComments(responseData);
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error fetching comments:', error);
-    //   });
+  
   }, [contentId]);
 
   const handleGoBack = () => {
